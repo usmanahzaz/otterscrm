@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { BarChart3, Settings, Users, Zap } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Leads', icon: BarChart3 },
+  { href: '/dashboard/leads', label: 'Leads', icon: BarChart3 },
   { href: '/dashboard/team', label: 'Team', icon: Users },
   { href: '/dashboard/automations', label: 'Automations', icon: Zap },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
@@ -19,7 +19,7 @@ export function Sidebar() {
       {/* Nav items */}
       <nav className="flex-1 px-3 py-6 space-y-1">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
+          const isActive = pathname === href || (href !== '/dashboard/leads' && pathname.startsWith(href))
           return (
             <Link
               key={href}
