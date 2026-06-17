@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import { getCurrentUser, signOut } from '@/lib/auth-actions'
 import { Sidebar } from '@/components/sidebar'
-import { Orbit, LogOut, Bell } from 'lucide-react'
+import { NotificationCenter } from '@/components/notification-center'
+import { getUnreadNotificationCount } from '@/lib/notification-actions'
+import { Orbit, LogOut } from 'lucide-react'
 
 export default async function DashboardLayout({
   children,
@@ -15,6 +17,7 @@ export default async function DashboardLayout({
   }
 
   const { user, profile, workspace, role } = currentUser
+  const unreadCount = await getUnreadNotificationCount()
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: '#f6f9fc' }}>
@@ -38,10 +41,7 @@ export default async function DashboardLayout({
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            <Bell className="w-4 h-4 text-[#8898aa]" />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#635bff]" />
-          </button>
+          <NotificationCenter initialUnreadCount={unreadCount} />
 
           <div className="flex items-center gap-2.5">
             <div

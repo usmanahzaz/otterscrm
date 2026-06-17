@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth-actions'
+import { createStatusChangeNotification, createAssignmentNotification } from '@/lib/notification-actions'
 import type { LeadStatus } from '@prisma/client'
 
 // ── Get single lead with full details ────────────────────────
@@ -78,7 +79,7 @@ export async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
 
   const oldStatus = lead.status
 
-  // Update lead and create activity
+  // Update lead and create activity and notification
   const [updated] = await Promise.all([
     db.lead.update({
       where: { id: leadId },
@@ -103,6 +104,15 @@ export async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
         metadata: { oldStatus, newStatus },
       },
     }),
+    // Create notification if lead is assigned to someone
+    lead.assignedToId
+      ? createStatusChangeNotification(
+          leadId,
+          currentUser.workspace.id,
+          lead.assignedToId,
+          newStatus
+        )
+      : Promise.resolve(null),
   ])
 
   revalidatePath(`/dashboard/leads/${leadId}`)
@@ -204,18 +214,29 @@ export async function assignLead(leadId: string, assignedToId: string | null) {
     },
   })
 
-  // Log activity
+  // Log activity and create notification
   const oldAssignee = lead.assignedToId
-  await db.activity.create({
-    data: {
-      leadId,
-      workspaceId: currentUser.workspace.id,
-      userId: currentUser.user.id,
-      type: 'assigned',
-      body: assignedToId ? `Assigned to a user` : 'Unassigned',
-      metadata: { oldAssignee, newAssignee: assignedToId },
-    },
-  })
+  await Promise.all([
+    db.activity.create({
+      data: {
+        leadId,
+        workspaceId: currentUser.workspace.id,
+        userId: currentUser.user.id,
+        type: 'assigned',
+        body: assignedToId ? `Assigned to a user` : 'Unassigned',
+        metadata: { oldAssignee, newAssignee: assignedToId },
+      },
+    }),
+    // Create notification if assigning to someone new
+    assignedToId && assignedToId !== oldAssignee
+      ? createAssignmentNotification(
+          leadId,
+          currentUser.workspace.id,
+          assignedToId,
+          lead.fullName
+        )
+      : Promise.resolve(null),
+  ])
 
   revalidatePath(`/dashboard/leads/${leadId}`)
   return updated

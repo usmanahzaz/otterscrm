@@ -3,6 +3,7 @@ import { getCurrentUser } from '@/lib/auth-actions'
 import { ProfileForm } from './profile-form'
 import { WorkspaceForm } from './workspace-form'
 import { PasswordForm } from './password-form'
+import { NotificationPreferencesForm } from '@/components/notification-preferences-form'
 
 export default async function SettingsPage() {
   const currentUser = await getCurrentUser()
@@ -65,27 +66,14 @@ export default async function SettingsPage() {
             </div>
           </section>
 
-          {/* Integrations section */}
+          {/* Notification Preferences section */}
           <section className="bg-white rounded-xl border border-[#e3e8ee] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#e3e8ee]">
-              <h2 className="text-[15px] font-semibold text-[#0a2540]">Integrations</h2>
-              <p className="text-[12px] text-[#8898aa] mt-0.5">Connect your Meta Ads account</p>
+              <h2 className="text-[15px] font-semibold text-[#0a2540]">Notifications</h2>
+              <p className="text-[12px] text-[#8898aa] mt-0.5">Manage how you receive notifications</p>
             </div>
             <div className="px-6 py-5">
-              <div className="flex items-center justify-between py-3 px-4 rounded-lg border border-[#e3e8ee]">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[11px] font-bold">
-                    f
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-medium text-[#0a2540]">Meta Ads</p>
-                    <p className="text-[11px] text-[#8898aa]">Coming in Phase 5</p>
-                  </div>
-                </div>
-                <span className="text-[11px] text-[#8898aa] bg-gray-100 px-2.5 py-1 rounded-full">
-                  Not connected
-                </span>
-              </div>
+              <NotificationPreferencesForm />
             </div>
           </section>
 
