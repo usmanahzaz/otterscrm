@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
 const plans = [
   {
     name: "Free",
     price: { m: 0, a: 0 },
-    desc: "Try it out.",
+    desc: "Get started at no cost.",
     features: ["1 user", "Manual lead entry", "Email notifications"],
     cta: "Get started",
     highlight: false,
@@ -16,7 +15,7 @@ const plans = [
   {
     name: "Starter",
     price: { m: 10, a: 8 },
-    desc: "For small teams.",
+    desc: "For small sales teams.",
     features: [
       "5 users",
       "1 Meta page",
@@ -35,7 +34,7 @@ const plans = [
       "10 users",
       "2 Meta pages",
       "Projects & teams",
-      "Reports",
+      "Reports & analytics",
       "Advanced assignments",
     ],
     cta: "Start free trial",
@@ -44,7 +43,7 @@ const plans = [
   {
     name: "Business",
     price: { m: 75, a: 60 },
-    desc: "For large operations.",
+    desc: "For high-volume teams.",
     features: [
       "50 users",
       "10 Meta pages",
@@ -61,95 +60,158 @@ export default function PricingSection() {
   const [annual, setAnnual] = useState(false);
 
   return (
-    <section id="pricing" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-5">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
+    <section id="pricing" className="py-24" style={{ background: "#f6f9fc" }}>
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 mb-14">
           <div>
-            <p className="text-xs font-semibold text-indigo-600 uppercase tracking-widest mb-4">
+            <p
+              className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-5"
+              style={{ color: "#635bff" }}
+            >
               Pricing
             </p>
-            <h2 className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight leading-tight">
-              Simple pricing.
+            <h2
+              className="text-4xl sm:text-5xl font-bold leading-tight"
+              style={{ color: "#0a2540", letterSpacing: "-0.03em" }}
+            >
+              Simple,
+              <br />
+              transparent pricing.
             </h2>
           </div>
-          <div className="inline-flex items-center gap-1 bg-zinc-100 rounded-lg p-1 self-start sm:self-auto">
-            <button
-              onClick={() => setAnnual(false)}
-              className={`text-xs font-medium px-4 py-1.5 rounded-md transition-all ${
-                !annual ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500"
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setAnnual(true)}
-              className={`text-xs font-medium px-4 py-1.5 rounded-md transition-all flex items-center gap-1.5 ${
-                annual ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500"
-              }`}
-            >
-              Annual
-              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded">
-                −20%
-              </span>
-            </button>
+
+          {/* Toggle */}
+          <div
+            className="inline-flex items-center self-start sm:self-auto rounded-lg p-1"
+            style={{ background: "#e3e8ee" }}
+          >
+            {["Monthly", "Annual"].map((label) => {
+              const isAnnual = label === "Annual";
+              const active = annual === isAnnual;
+              return (
+                <button
+                  key={label}
+                  onClick={() => setAnnual(isAnnual)}
+                  className={`flex items-center gap-2 text-[13px] font-medium px-4 py-2 rounded-md transition-all ${
+                    active ? "bg-white shadow-sm text-[#0a2540]" : "text-[#8898aa]"
+                  }`}
+                >
+                  {label}
+                  {isAnnual && (
+                    <span
+                      className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                      style={{ background: "#d4edda", color: "#0f5132" }}
+                    >
+                      −20%
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
+        {/* Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`rounded-xl border p-6 flex flex-col relative ${
+              className={`relative rounded-xl p-6 flex flex-col border transition-all ${
                 plan.highlight
-                  ? "bg-indigo-600 border-indigo-600 text-white shadow-xl shadow-indigo-100"
-                  : "bg-white border-zinc-200"
+                  ? "border-[#635bff] shadow-lg shadow-[#635bff]/10"
+                  : "border-[#e3e8ee] bg-white hover:border-[#635bff]/30 hover:shadow-sm"
               }`}
+              style={plan.highlight ? { background: "#0a2540" } : {}}
             >
               {plan.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-zinc-900 text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full">
+                <div
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full text-white"
+                  style={{ background: "#635bff" }}
+                >
                   Most popular
                 </div>
               )}
-              <div className="mb-5">
-                <p className={`text-sm font-semibold mb-0.5 ${plan.highlight ? "text-indigo-200" : "text-zinc-900"}`}>
+
+              <div className="mb-6">
+                <p
+                  className="text-[13px] font-semibold mb-0.5"
+                  style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : "#0a2540" }}
+                >
                   {plan.name}
                 </p>
-                <p className={`text-xs mb-4 ${plan.highlight ? "text-indigo-300" : "text-zinc-400"}`}>
+                <p
+                  className="text-[12px] mb-4"
+                  style={{ color: plan.highlight ? "rgba(255,255,255,0.4)" : "#8898aa" }}
+                >
                   {plan.desc}
                 </p>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-4xl font-bold tabular-nums ${plan.highlight ? "text-white" : "text-zinc-900"}`}>
+                  <span
+                    className="text-[40px] font-bold tabular-nums leading-none"
+                    style={{
+                      color: plan.highlight ? "white" : "#0a2540",
+                      letterSpacing: "-0.03em",
+                    }}
+                  >
                     ${annual ? plan.price.a : plan.price.m}
                   </span>
-                  <span className={`text-sm ${plan.highlight ? "text-indigo-300" : "text-zinc-400"}`}>
+                  <span
+                    className="text-[13px]"
+                    style={{ color: plan.highlight ? "rgba(255,255,255,0.35)" : "#8898aa" }}
+                  >
                     /mo
                   </span>
                 </div>
+                {annual && plan.price.m > 0 && (
+                  <p
+                    className="text-[11px] mt-1"
+                    style={{ color: plan.highlight ? "rgba(255,255,255,0.3)" : "#8898aa" }}
+                  >
+                    Billed annually
+                  </p>
+                )}
               </div>
 
-              <ul className="space-y-2.5 mb-6 flex-1">
+              <ul className="space-y-3 mb-7 flex-1">
                 {plan.features.map((f) => (
-                  <li key={f} className={`flex items-center gap-2 text-sm ${plan.highlight ? "text-indigo-100" : "text-zinc-600"}`}>
-                    <Check className={`w-3.5 h-3.5 flex-shrink-0 ${plan.highlight ? "text-indigo-300" : "text-indigo-500"}`} />
+                  <li
+                    key={f}
+                    className="flex items-center gap-2.5 text-[13px]"
+                    style={{ color: plan.highlight ? "rgba(255,255,255,0.65)" : "#425466" }}
+                  >
+                    <Check
+                      className="w-3.5 h-3.5 flex-shrink-0"
+                      style={{ color: plan.highlight ? "#a9a5ff" : "#635bff" }}
+                    />
                     {f}
                   </li>
                 ))}
               </ul>
 
-              <Button
-                className={`w-full rounded-lg text-sm font-semibold ${
+              <a
+                href="#"
+                className="block text-center py-2.5 rounded-md text-[13px] font-semibold transition-all"
+                style={
                   plan.highlight
-                    ? "bg-white text-indigo-700 hover:bg-indigo-50"
-                    : "bg-indigo-600 hover:bg-indigo-700 text-white"
-                }`}
+                    ? { background: "#635bff", color: "white" }
+                    : {
+                        background: "transparent",
+                        color: "#635bff",
+                        border: "1px solid #635bff",
+                      }
+                }
               >
                 {plan.cta}
-              </Button>
+              </a>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-xs text-zinc-400 mt-8">
+        <p
+          className="text-center text-[12px] mt-8"
+          style={{ color: "#8898aa" }}
+        >
           All plans include a 14-day free trial · No credit card required
         </p>
       </div>

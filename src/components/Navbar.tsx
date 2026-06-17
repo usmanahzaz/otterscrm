@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Menu, X, Orbit } from "lucide-react";
 
 export default function Navbar() {
@@ -9,53 +8,66 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 8);
+    const fn = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  const links = ["Features", "How It Works", "Pricing"];
+
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-200 ${
-        scrolled ? "bg-white/90 backdrop-blur border-b border-zinc-100" : "bg-transparent"
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#0a2540]/95 backdrop-blur-md border-b border-white/10"
+          : "bg-transparent"
       }`}
     >
-      <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <a href="#" className="flex items-center gap-2 group">
+          <div className="w-7 h-7 rounded-md bg-[#635bff] flex items-center justify-center">
             <Orbit className="w-4 h-4 text-white" />
           </div>
-          <span className="font-semibold text-zinc-900 tracking-tight">
-            Lead<span className="text-indigo-600">Orbit</span>
+          <span
+            className="font-semibold text-[15px] tracking-tight text-white"
+            style={{ letterSpacing: "-0.01em" }}
+          >
+            LeadOrbit
           </span>
         </a>
 
-        <nav className="hidden md:flex items-center gap-8">
-          {["Features", "How It Works", "Pricing"].map((l) => (
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-7">
+          {links.map((l) => (
             <a
               key={l}
-              href={`#${l.toLowerCase().replace(" ", "-")}`}
-              className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+              href={`#${l.toLowerCase().replace(/\s+/g, "-")}`}
+              className="text-[14px] font-medium text-white/70 hover:text-white transition-colors"
             >
               {l}
             </a>
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
-          <a href="#" className="text-sm text-zinc-500 hover:text-zinc-900">
-            Log in
-          </a>
-          <Button
-            size="sm"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm"
+        {/* Desktop CTA */}
+        <div className="hidden md:flex items-center gap-5">
+          <a
+            href="#"
+            className="text-[14px] font-medium text-white/70 hover:text-white transition-colors"
           >
-            Start free
-          </Button>
+            Sign in
+          </a>
+          <a
+            href="#"
+            className="text-[14px] font-semibold text-white bg-[#635bff] hover:bg-[#5851ea] px-4 py-2 rounded-md transition-colors"
+          >
+            Start now →
+          </a>
         </div>
 
         <button
-          className="md:hidden text-zinc-600"
+          className="md:hidden text-white/80 hover:text-white"
           onClick={() => setOpen(!open)}
         >
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -63,22 +75,22 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className="md:hidden bg-white border-t border-zinc-100 px-5 py-4 flex flex-col gap-4">
-          {["Features", "How It Works", "Pricing"].map((l) => (
+        <div className="md:hidden bg-[#0a2540] border-t border-white/10 px-6 py-5 flex flex-col gap-4">
+          {links.map((l) => (
             <a
               key={l}
-              href={`#${l.toLowerCase().replace(" ", "-")}`}
-              className="text-sm text-zinc-700"
+              href={`#${l.toLowerCase().replace(/\s+/g, "-")}`}
+              className="text-sm font-medium text-white/70"
               onClick={() => setOpen(false)}
             >
               {l}
             </a>
           ))}
-          <div className="flex gap-3 pt-1">
-            <a href="#" className="text-sm text-zinc-500">Log in</a>
-            <Button size="sm" className="bg-indigo-600 text-white rounded-lg">
-              Start free
-            </Button>
+          <div className="flex gap-4 pt-2">
+            <a href="#" className="text-sm text-white/60">Sign in</a>
+            <a href="#" className="text-sm font-semibold text-white bg-[#635bff] px-4 py-1.5 rounded-md">
+              Start now →
+            </a>
           </div>
         </div>
       )}

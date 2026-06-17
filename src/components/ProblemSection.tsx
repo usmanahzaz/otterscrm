@@ -1,33 +1,81 @@
 const problems = [
-  { emoji: "⏳", text: "Leads sit for hours before anyone sees them." },
-  { emoji: "🔕", text: "Sales reps aren't notified in time." },
-  { emoji: "😶", text: "Managers can't see what the team is doing." },
-  { emoji: "💸", text: "Revenue walks out the door, silently." },
+  {
+    n: "01",
+    title: "Leads sit unnoticed for hours.",
+    desc: "Meta sends you the lead but nobody sees it until it's too late.",
+  },
+  {
+    n: "02",
+    title: "Reps don't get notified in time.",
+    desc: "Without instant alerts, the first call never happens. Leads go cold.",
+  },
+  {
+    n: "03",
+    title: "No visibility for managers.",
+    desc: "Nobody knows who followed up, when, or with what result.",
+  },
+  {
+    n: "04",
+    title: "Revenue slips away silently.",
+    desc: "Every missed lead is real money your competitor is closing instead.",
+  },
 ];
 
 export default function ProblemSection() {
   return (
-    <section className="py-24 bg-zinc-950">
-      <div className="max-w-6xl mx-auto px-5">
-        <div className="max-w-2xl">
-          <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-4">
-            The problem
-          </p>
-          <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight leading-tight mb-6">
-            Your Meta leads are falling through the cracks.
-          </h2>
-          <p className="text-zinc-400 text-lg leading-relaxed">
-            Running ads without a proper follow-up system means you're paying for leads that never convert.
-          </p>
-        </div>
+    <section className="py-24 bg-white">
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Section label */}
+        <p
+          className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-5"
+          style={{ color: "#635bff" }}
+        >
+          The problem
+        </p>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-14">
-          {problems.map(({ emoji, text }) => (
-            <div key={text} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-              <span className="text-2xl mb-4 block">{emoji}</span>
-              <p className="text-sm text-zinc-300 leading-relaxed">{text}</p>
-            </div>
-          ))}
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
+          {/* Left — headline */}
+          <div>
+            <h2
+              className="text-4xl sm:text-5xl font-bold leading-tight mb-6"
+              style={{ color: "#0a2540", letterSpacing: "-0.03em" }}
+            >
+              Your Meta leads are
+              <br />
+              falling through
+              <br />
+              the cracks.
+            </h2>
+            <p className="text-[17px] leading-relaxed" style={{ color: "#425466" }}>
+              Running ads without a follow-up system means you're paying for
+              leads that never convert. Here's why.
+            </p>
+          </div>
+
+          {/* Right — problems */}
+          <div className="grid grid-cols-1 gap-5">
+            {problems.map(({ n, title, desc }) => (
+              <div
+                key={n}
+                className="flex gap-5 p-5 rounded-xl border border-[#e3e8ee] hover:border-[#635bff]/30 hover:shadow-sm transition-all"
+              >
+                <span
+                  className="text-[13px] font-bold tabular-nums mt-0.5 flex-shrink-0 w-6"
+                  style={{ color: "#c4cdd8" }}
+                >
+                  {n}
+                </span>
+                <div>
+                  <p className="text-[14px] font-semibold mb-1" style={{ color: "#0a2540" }}>
+                    {title}
+                  </p>
+                  <p className="text-[13px] leading-relaxed" style={{ color: "#8898aa" }}>
+                    {desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

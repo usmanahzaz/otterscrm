@@ -4,66 +4,90 @@ import {
   Users,
   Bell,
   BarChart3,
-  RefreshCw,
+  Activity,
 } from "lucide-react";
 
 const features = [
   {
     icon: Share2,
     title: "Meta Lead Ads sync",
-    desc: "Every lead from your Meta campaigns lands in LeadOrbit automatically — no manual work.",
+    desc: "Every lead from your Meta campaigns arrives in LeadOrbit instantly. Zero manual work.",
   },
   {
     icon: MessageCircle,
     title: "WhatsApp notifications",
-    desc: "Your sales reps get a WhatsApp message the moment a new lead arrives. No app needed.",
+    desc: "Reps get a WhatsApp message the moment a lead arrives. No app needed, just their phone.",
   },
   {
     icon: Users,
     title: "Auto team assignment",
-    desc: "Leads are routed to the right rep based on your rules. Round-robin, by location, or custom.",
+    desc: "Leads route to the right rep automatically — round-robin, by area, or custom rules.",
   },
   {
     icon: Bell,
     title: "Follow-up reminders",
-    desc: "Automated reminders so every prospect gets a timely follow-up. Nothing slips.",
+    desc: "Automated reminders ensure every lead gets a timely follow-up. Nothing ever slips.",
   },
   {
     icon: BarChart3,
     title: "Team performance",
-    desc: "See response times, conversion rates, and activity for each rep in real time.",
+    desc: "Track response times and conversion rates per rep. Coach with real data, not guesses.",
   },
   {
-    icon: RefreshCw,
-    title: "Full activity timeline",
-    desc: "Every call, note, and status change logged on the lead. Full context, always.",
+    icon: Activity,
+    title: "Activity timeline",
+    desc: "Every call, note, and status change logged per lead. Full context, at a glance.",
   },
 ];
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-5">
-        <div className="max-w-xl mb-14">
-          <p className="text-xs font-semibold text-indigo-600 uppercase tracking-widest mb-4">
-            Features
-          </p>
-          <h2 className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight leading-tight">
-            Built for teams that run Meta ads.
+    <section id="features" className="py-24" style={{ background: "#f6f9fc" }}>
+      <div className="max-w-6xl mx-auto px-6">
+        <p
+          className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-5"
+          style={{ color: "#635bff" }}
+        >
+          Features
+        </p>
+
+        <div className="grid lg:grid-cols-2 gap-12 items-end mb-14">
+          <h2
+            className="text-4xl sm:text-5xl font-bold leading-tight"
+            style={{ color: "#0a2540", letterSpacing: "-0.03em" }}
+          >
+            Built for teams
+            <br />
+            that run Meta ads.
           </h2>
+          <p className="text-[17px] leading-relaxed" style={{ color: "#425466" }}>
+            Everything your sales team needs — from the moment a lead clicks your
+            ad to the moment the deal is closed.
+          </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-100 border border-zinc-100 rounded-2xl overflow-hidden">
-          {features.map(({ icon: Icon, title, desc }) => (
+        {/* Bento grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#e3e8ee] border border-[#e3e8ee] rounded-2xl overflow-hidden">
+          {features.map(({ icon: Icon, title, desc }, i) => (
             <div
               key={title}
-              className="bg-white p-8 hover:bg-indigo-50/40 transition-colors group"
+              className="bg-white p-8 group hover:bg-[#f6f9fc] transition-colors"
             >
-              <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center mb-5 group-hover:bg-indigo-100 transition-colors">
-                <Icon className="w-4 h-4 text-indigo-600" />
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center mb-6"
+                style={{ background: "rgba(99,91,255,0.08)" }}
+              >
+                <Icon className="w-5 h-5" style={{ color: "#635bff" }} />
               </div>
-              <h3 className="font-semibold text-zinc-900 mb-2 text-[15px]">{title}</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">{desc}</p>
+              <h3
+                className="text-[15px] font-semibold mb-2"
+                style={{ color: "#0a2540", letterSpacing: "-0.01em" }}
+              >
+                {title}
+              </h3>
+              <p className="text-[14px] leading-relaxed" style={{ color: "#8898aa" }}>
+                {desc}
+              </p>
             </div>
           ))}
         </div>

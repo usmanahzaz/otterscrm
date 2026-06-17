@@ -1,17 +1,28 @@
-const logos = ["Acme Corp", "Nexus Digital", "BrightScale", "SwiftGrow", "PeakSales", "Orbit Media"];
+const logos = [
+  "Acme Corp",
+  "Nexus Digital",
+  "BrightScale",
+  "SwiftGrow",
+  "PeakSales",
+  "Orbit Media",
+];
 
 export default function SocialProof() {
   return (
-    <section className="py-14 border-y border-zinc-100">
-      <div className="max-w-6xl mx-auto px-5">
-        <p className="text-center text-xs font-medium text-zinc-400 uppercase tracking-widest mb-8">
-          Trusted by sales teams at
+    <section className="py-16 bg-[#f6f9fc] border-b border-[#e3e8ee]">
+      <div className="max-w-6xl mx-auto px-6">
+        <p
+          className="text-center text-[11px] font-semibold uppercase tracking-[0.15em] mb-10"
+          style={{ color: "#8898aa" }}
+        >
+          Trusted by sales teams worldwide
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-14">
+        <div className="flex flex-wrap items-center justify-center gap-10 lg:gap-16">
           {logos.map((name) => (
             <span
               key={name}
-              className="text-zinc-300 font-semibold text-base tracking-tight hover:text-zinc-400 transition-colors"
+              className="text-[15px] font-semibold tracking-tight transition-colors cursor-default"
+              style={{ color: "#c4cdd8" }}
             >
               {name}
             </span>
