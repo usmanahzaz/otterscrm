@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+type PreferencesKey = 'whatsapp' | 'email' | 'inApp'
+
 export function NotificationPreferencesForm() {
   const [preferences, setPreferences] = useState({
     whatsapp: true,
@@ -9,7 +11,7 @@ export function NotificationPreferencesForm() {
     inApp: true,
   })
 
-  const handleChange = (key: string) => {
+  const handleChange = (key: PreferencesKey) => {
     setPreferences(prev => ({ ...prev, [key]: !prev[key] }))
   }
 

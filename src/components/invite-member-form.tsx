@@ -2,21 +2,10 @@
 
 import { useState } from 'react'
 import { inviteMember } from '@/lib/team-actions'
-import type { WorkspaceMember } from '@prisma/client'
-
-interface Member extends WorkspaceMember {
-  user: {
-    id: string
-    email: string
-    fullName: string | null
-    profile: {
-      avatarUrl: string | null
-    } | null
-  }
-}
+import { Loader2, CheckCircle2 } from 'lucide-react'
 
 interface InviteMemberFormProps {
-  onSuccess: (member: Member) => void
+  onSuccess?: () => void
   onCancel: () => void
 }
 
@@ -25,10 +14,12 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
   const [role, setRole] = useState('agent')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
+    setSuccess(false)
 
     if (!email || !role) {
       setError('Email and role are required')
@@ -45,8 +36,11 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
 
       if (result.error) {
         setError(result.error)
-      } else if (result.success && result.member) {
-        onSuccess(result.member)
+      } else if (result.success) {
+        setSuccess(true)
+        setEmail('')
+        onSuccess?.()
+        setTimeout(() => onCancel(), 2000)
       }
     } catch (err) {
       setError('Failed to invite member')
@@ -59,8 +53,15 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 text-red-600 text-[12px]">
+        <div className="p-3 rounded-lg bg-red-50 text-red-600 text-[12px] border border-red-100">
           {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="p-3 rounded-lg bg-emerald-50 text-emerald-600 text-[12px] border border-emerald-100 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4" />
+          Invitation sent!
         </div>
       )}
 
@@ -76,9 +77,6 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
           disabled={isLoading}
           className="w-full px-4 py-2.5 rounded-lg border border-[#e3e8ee] text-[13px] text-[#0a2540] placeholder-[#8898aa] focus:outline-none focus:border-[#635bff] focus:ring-2 focus:ring-[#635bff]/10 disabled:opacity-50"
         />
-        <p className="text-[11px] text-[#8898aa] mt-1">
-          The user must already have an account
-        </p>
       </div>
 
       <div>
@@ -89,12 +87,11 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
           value={role}
           onChange={(e) => setRole(e.target.value)}
           disabled={isLoading}
-          className="w-full px-4 py-2.5 rounded-lg border border-[#e3e8ee] text-[13px] text-[#0a2540] bg-white focus:outline-none focus:border-[#635bff] focus:ring-2 focus:ring-[#635bff]/10 disabled:opacity-50 cursor-pointer"
+          className="w-full px-4 py-2.5 rounded-lg border border-[#e3e8ee] text-[13px] text-[#0a2540] bg-white focus:outline-none focus:border-[#635bff] focus:ring-2 focus:ring-[#635bff]/10 disabled:opacity-50"
         >
-          <option value="agent">Agent - Can view and manage leads</option>
-          <option value="manager">Manager - Can manage team and leads</option>
-          <option value="admin">Admin - Full access except ownership</option>
-          <option value="owner">Owner - Full workspace control</option>
+          <option value="agent">Agent</option>
+          <option value="manager">Manager</option>
+          <option value="admin">Admin</option>
         </select>
       </div>
 
@@ -102,8 +99,9 @@ export function InviteMemberForm({ onSuccess, onCancel }: InviteMemberFormProps)
         <button
           type="submit"
           disabled={isLoading}
-          className="flex-1 px-4 py-2.5 rounded-lg bg-[#635bff] text-white text-[13px] font-semibold hover:bg-[#5350e6] transition-colors disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#635bff] text-white text-[13px] font-semibold hover:bg-[#5350e6] transition-colors disabled:opacity-50"
         >
+          {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           {isLoading ? 'Inviting...' : 'Invite Member'}
         </button>
         <button
