@@ -17,35 +17,40 @@ const COOKIE_OPTIONS = {
 
 // ── Get current user from JWT cookie ───────────────────────
 export async function getCurrentUser() {
-  const cookieStore = await cookies()
-  const token = cookieStore.get(COOKIE_NAME)?.value
+  try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get(COOKIE_NAME)?.value
 
-  if (!token) return null
+    if (!token) return null
 
-  const payload = await verifyJWT(token)
-  if (!payload) return null
+    const payload = await verifyJWT(token)
+    if (!payload) return null
 
-  const user = await db.user.findUnique({
-    where: { id: payload.userId },
-    include: {
-      profile: true,
-      workspaces: {
-        include: { workspace: true },
-        where: { workspaceId: payload.workspaceId },
+    const user = await db.user.findUnique({
+      where: { id: payload.userId },
+      include: {
+        profile: true,
+        workspaces: {
+          include: { workspace: true },
+          where: { workspaceId: payload.workspaceId },
+        },
       },
-    },
-  })
+    })
 
-  if (!user) return null
+    if (!user) return null
 
-  const workspace = user.workspaces[0]?.workspace ?? null
-  const role = user.workspaces[0]?.role ?? null
+    const workspace = user.workspaces[0]?.workspace ?? null
+    const role = user.workspaces[0]?.role ?? null
 
-  return {
-    user,
-    profile: user.profile,
-    workspace,
-    role,
+    return {
+      user,
+      profile: user.profile,
+      workspace,
+      role,
+    }
+  } catch (error) {
+    console.error('getCurrentUser error:', error)
+    return null
   }
 }
 
@@ -125,44 +130,50 @@ export async function signUp(formData: FormData) {
 
 // ── Sign In ────────────────────────────────────────────────
 export async function signIn(formData: FormData) {
-  const email    = formData.get('email') as string
-  const password = formData.get('password') as string
+  try {
+    const email    = formData.get('email') as string
+    const password = formData.get('password') as string
 
-  if (!email || !password) {
-    return { error: 'Email and password are required.' }
+    if (!email || !password) {
+      return { error: 'Email and password are required.' }
+    }
+
+    const user = await db.user.findUnique({
+      where: { email },
+      include: { workspaces: { include: { workspace: true } } },
+    })
+
+    if (!user) {
+      return { error: 'Invalid email or password.' }
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
+      return { error: 'Invalid email or password.' }
+    }
+
+    const workspace = user.workspaces[0]?.workspace
+    if (!workspace) {
+      return { error: 'No workspace found. Please sign up again.' }
+    }
+
+    // Create JWT and set cookie
+    const token = await signJWT({
+      userId: user.id,
+      email: user.email,
+      workspaceId: workspace.id,
+    })
+
+    const cookieStore = await cookies()
+    cookieStore.set(COOKIE_NAME, token, COOKIE_OPTIONS)
+
+    revalidatePath('/', 'layout')
+    redirect('/dashboard')
+  } catch (error) {
+    console.error('signIn error:', error)
+    const message = error instanceof Error ? error.message : 'Failed to sign in. Please check your database connection.'
+    return { error: message }
   }
-
-  const user = await db.user.findUnique({
-    where: { email },
-    include: { workspaces: { include: { workspace: true } } },
-  })
-
-  if (!user) {
-    return { error: 'Invalid email or password.' }
-  }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password)
-  if (!isPasswordValid) {
-    return { error: 'Invalid email or password.' }
-  }
-
-  const workspace = user.workspaces[0]?.workspace
-  if (!workspace) {
-    return { error: 'No workspace found. Please sign up again.' }
-  }
-
-  // Create JWT and set cookie
-  const token = await signJWT({
-    userId: user.id,
-    email: user.email,
-    workspaceId: workspace.id,
-  })
-
-  const cookieStore = await cookies()
-  cookieStore.set(COOKIE_NAME, token, COOKIE_OPTIONS)
-
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
 }
 
 // ── Sign Out ───────────────────────────────────────────────
