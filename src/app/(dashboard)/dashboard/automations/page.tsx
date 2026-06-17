@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { getCurrentUser } from '@/lib/auth-actions'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Zap } from 'lucide-react'
 
-export default async function LeadsPage() {
+export default async function AutomationsPage() {
   const currentUser = await getCurrentUser()
 
   if (!currentUser) redirect('/login')
@@ -13,28 +13,16 @@ export default async function LeadsPage() {
       <div className="border-b border-[#e3e8ee] px-8 py-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#0a2540]" style={{ letterSpacing: '-0.025em' }}>
-            Leads
+            Automations
           </h1>
           <p className="text-[13px] text-[#8898aa] mt-1">
-            All your Meta lead ads in one place
+            Automate your lead follow-ups and communications
           </p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#635bff] text-white text-[13px] font-semibold hover:bg-[#5350e6] transition-colors">
           <Plus className="w-4 h-4" />
-          Import Leads
+          Create Workflow
         </button>
-      </div>
-
-      {/* Filters & Search */}
-      <div className="border-b border-[#e3e8ee] px-8 py-4 flex items-center gap-3">
-        <div className="flex-1 relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#8898aa]" />
-          <input
-            type="text"
-            placeholder="Search leads by name, email, or phone…"
-            className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#e3e8ee] text-[13px] text-[#0a2540] placeholder-[#8898aa] focus:outline-none focus:border-[#635bff] focus:ring-2 focus:ring-[#635bff]/10"
-          />
-        </div>
       </div>
 
       {/* Content area */}
@@ -44,18 +32,14 @@ export default async function LeadsPage() {
             className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
             style={{ background: 'rgba(99,91,255,0.1)' }}
           >
-            <Plus className="w-6 h-6 text-[#635bff]" />
+            <Zap className="w-6 h-6 text-[#635bff]" />
           </div>
           <h2 className="text-lg font-semibold text-[#0a2540] mb-2">
-            No leads yet
+            Automations coming soon
           </h2>
-          <p className="text-[13px] text-[#8898aa] mb-4">
-            Connect your Meta account or import leads to get started.
+          <p className="text-[13px] text-[#8898aa]">
+            WhatsApp and email automation features in Phase 6.
           </p>
-          <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#635bff] text-white text-[13px] font-semibold hover:bg-[#5350e6] transition-colors">
-            <Plus className="w-4 h-4" />
-            Add Your First Lead
-          </button>
         </div>
       </div>
     </div>
