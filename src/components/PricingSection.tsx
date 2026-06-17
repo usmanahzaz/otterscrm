@@ -2,67 +2,58 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Zap } from "lucide-react";
+import { Check } from "lucide-react";
 
 const plans = [
   {
     name: "Free",
-    price: { monthly: 0, annual: 0 },
-    desc: "Get started with the basics.",
-    features: [
-      "1 User",
-      "1 Facebook Page",
-      "Manual Lead Entry",
-      "Email Notifications",
-    ],
-    cta: "Start Free",
+    price: { m: 0, a: 0 },
+    desc: "Try it out.",
+    features: ["1 user", "Manual lead entry", "Email notifications"],
+    cta: "Get started",
     highlight: false,
-    badge: null,
   },
   {
     name: "Starter",
-    price: { monthly: 10, annual: 8 },
-    desc: "Perfect for small sales teams.",
+    price: { m: 10, a: 8 },
+    desc: "For small teams.",
     features: [
-      "5 Users",
-      "1 Facebook Page",
-      "Facebook Lead Sync",
-      "WhatsApp Alerts",
-      "Follow-Up Reminders",
+      "5 users",
+      "1 Meta page",
+      "Meta lead sync",
+      "WhatsApp alerts",
+      "Follow-up reminders",
     ],
-    cta: "Get Started",
+    cta: "Start free trial",
     highlight: true,
-    badge: "Most Popular",
   },
   {
     name: "Growth",
-    price: { monthly: 25, annual: 20 },
-    desc: "Scale your lead operations.",
+    price: { m: 25, a: 20 },
+    desc: "For growing teams.",
     features: [
-      "10 Users",
-      "2 Facebook Pages",
-      "Projects & Teams",
-      "Reports & Analytics",
-      "Advanced Assignments",
+      "10 users",
+      "2 Meta pages",
+      "Projects & teams",
+      "Reports",
+      "Advanced assignments",
     ],
-    cta: "Choose Growth",
+    cta: "Start free trial",
     highlight: false,
-    badge: null,
   },
   {
     name: "Business",
-    price: { monthly: 75, annual: 62 },
-    desc: "For high-volume sales organizations.",
+    price: { m: 75, a: 60 },
+    desc: "For large operations.",
     features: [
-      "50 Users",
-      "10 Facebook Pages",
-      "Advanced Reporting",
-      "Team Performance",
-      "Priority Support",
+      "50 users",
+      "10 Meta pages",
+      "Advanced reporting",
+      "Team performance",
+      "Priority support",
     ],
-    cta: "Contact Sales",
+    cta: "Contact sales",
     highlight: false,
-    badge: null,
   },
 ];
 
@@ -70,102 +61,83 @@ export default function PricingSection() {
   const [annual, setAnnual] = useState(false);
 
   return (
-    <section id="pricing" className="py-24 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest mb-3">
-            Pricing
-          </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-900 tracking-tight">
-            Simple, Transparent{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">
-              Pricing.
-            </span>
-          </h2>
-          <p className="mt-4 text-lg text-zinc-500 max-w-xl mx-auto">
-            Start free. Upgrade when you're ready. No hidden fees.
-          </p>
-
-          {/* Toggle */}
-          <div className="inline-flex items-center gap-3 mt-8 bg-white border border-zinc-200 rounded-full p-1 shadow-sm">
+    <section id="pricing" className="py-24 bg-white">
+      <div className="max-w-6xl mx-auto px-5">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
+          <div>
+            <p className="text-xs font-semibold text-indigo-600 uppercase tracking-widest mb-4">
+              Pricing
+            </p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight leading-tight">
+              Simple pricing.
+            </h2>
+          </div>
+          <div className="inline-flex items-center gap-1 bg-zinc-100 rounded-lg p-1 self-start sm:self-auto">
             <button
               onClick={() => setAnnual(false)}
-              className={`text-sm font-medium px-5 py-1.5 rounded-full transition-all ${
-                !annual
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-900"
+              className={`text-xs font-medium px-4 py-1.5 rounded-md transition-all ${
+                !annual ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500"
               }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setAnnual(true)}
-              className={`text-sm font-medium px-5 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
-                annual
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-900"
+              className={`text-xs font-medium px-4 py-1.5 rounded-md transition-all flex items-center gap-1.5 ${
+                annual ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500"
               }`}
             >
               Annual
-              <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${annual ? "bg-white/20 text-white" : "bg-emerald-100 text-emerald-700"}`}>
-                -20%
+              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                −20%
               </span>
             </button>
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-2xl border p-7 flex flex-col transition-all duration-300 ${
+              className={`rounded-xl border p-6 flex flex-col relative ${
                 plan.highlight
-                  ? "bg-gradient-to-b from-indigo-600 to-indigo-700 border-indigo-500 shadow-2xl shadow-indigo-200 scale-105"
-                  : "bg-white border-zinc-200 hover:shadow-lg hover:border-zinc-300"
+                  ? "bg-indigo-600 border-indigo-600 text-white shadow-xl shadow-indigo-100"
+                  : "bg-white border-zinc-200"
               }`}
             >
-              {plan.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
-                    <Zap className="w-3 h-3" />
-                    {plan.badge}
-                  </span>
+              {plan.highlight && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-zinc-900 text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full">
+                  Most popular
                 </div>
               )}
-
               <div className="mb-5">
-                <h3 className={`font-bold text-lg mb-1 ${plan.highlight ? "text-white" : "text-zinc-900"}`}>
+                <p className={`text-sm font-semibold mb-0.5 ${plan.highlight ? "text-indigo-200" : "text-zinc-900"}`}>
                   {plan.name}
-                </h3>
-                <p className={`text-sm mb-4 ${plan.highlight ? "text-indigo-200" : "text-zinc-500"}`}>
+                </p>
+                <p className={`text-xs mb-4 ${plan.highlight ? "text-indigo-300" : "text-zinc-400"}`}>
                   {plan.desc}
                 </p>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-4xl font-bold ${plan.highlight ? "text-white" : "text-zinc-900"}`}>
-                    ${annual ? plan.price.annual : plan.price.monthly}
+                  <span className={`text-4xl font-bold tabular-nums ${plan.highlight ? "text-white" : "text-zinc-900"}`}>
+                    ${annual ? plan.price.a : plan.price.m}
                   </span>
-                  <span className={`text-sm ${plan.highlight ? "text-indigo-200" : "text-zinc-400"}`}>
-                    /month
+                  <span className={`text-sm ${plan.highlight ? "text-indigo-300" : "text-zinc-400"}`}>
+                    /mo
                   </span>
                 </div>
-                {annual && plan.price.monthly > 0 && (
-                  <p className={`text-xs mt-1 ${plan.highlight ? "text-indigo-200" : "text-zinc-400"}`}>
-                    Billed annually
-                  </p>
-                )}
               </div>
 
-              <ul className="space-y-3 mb-7 flex-1">
+              <ul className="space-y-2.5 mb-6 flex-1">
                 {plan.features.map((f) => (
-                  <li key={f} className={`flex items-center gap-2.5 text-sm ${plan.highlight ? "text-indigo-100" : "text-zinc-600"}`}>
-                    <Check className={`w-4 h-4 flex-shrink-0 ${plan.highlight ? "text-indigo-200" : "text-indigo-600"}`} />
+                  <li key={f} className={`flex items-center gap-2 text-sm ${plan.highlight ? "text-indigo-100" : "text-zinc-600"}`}>
+                    <Check className={`w-3.5 h-3.5 flex-shrink-0 ${plan.highlight ? "text-indigo-300" : "text-indigo-500"}`} />
                     {f}
                   </li>
                 ))}
               </ul>
 
               <Button
-                className={`w-full rounded-full font-semibold ${
+                className={`w-full rounded-lg text-sm font-semibold ${
                   plan.highlight
                     ? "bg-white text-indigo-700 hover:bg-indigo-50"
                     : "bg-indigo-600 hover:bg-indigo-700 text-white"
@@ -177,8 +149,8 @@ export default function PricingSection() {
           ))}
         </div>
 
-        <p className="text-center text-sm text-zinc-400 mt-8">
-          All plans include a 14-day free trial. No credit card required.
+        <p className="text-center text-xs text-zinc-400 mt-8">
+          All plans include a 14-day free trial · No credit card required
         </p>
       </div>
     </section>

@@ -1,60 +1,38 @@
-import { Orbit, Code, Camera, Send, Globe } from "lucide-react";
+import { Orbit } from "lucide-react";
 
 export default function Footer() {
-  const links = {
-    Product: ["Features", "Pricing", "How It Works", "Changelog"],
-    Company: ["About", "Blog", "Careers", "Contact"],
-    Legal: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
+  const cols = {
+    Product: ["Features", "Pricing", "How It Works", "Login"],
+    Legal: ["Privacy Policy", "Terms of Service"],
   };
 
   return (
-    <footer className="bg-zinc-950 text-zinc-400">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
-          {/* Brand */}
+    <footer className="bg-zinc-950 border-t border-zinc-800">
+      <div className="max-w-6xl mx-auto px-5 py-14">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 mb-12">
           <div className="col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-                <Orbit className="w-4 h-4 text-white" />
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center">
+                <Orbit className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-bold text-xl text-white">
+              <span className="font-semibold text-white">
                 Lead<span className="text-indigo-400">Orbit</span>
               </span>
             </div>
-            <p className="text-sm leading-relaxed max-w-xs mb-6">
-              The CRM built for small businesses that run Facebook Lead Ads.
-              Capture, assign, and convert every lead.
+            <p className="text-sm text-zinc-500 max-w-xs leading-relaxed">
+              The CRM for teams that run Meta Lead Ads. Capture, assign, and convert every lead.
             </p>
-            <div className="flex gap-3">
-              {[
-                { Icon: Send, label: "Twitter" },
-                { Icon: Globe, label: "LinkedIn" },
-                { Icon: Code, label: "GitHub" },
-                { Icon: Camera, label: "Instagram" },
-              ].map(({ Icon, label }) => (
-                <a
-                  key={label}
-                  href="#"
-                  aria-label={label}
-                  className="w-9 h-9 rounded-lg bg-zinc-800 hover:bg-indigo-600 flex items-center justify-center transition-colors"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
           </div>
 
-          {/* Links */}
-          {Object.entries(links).map(([group, items]) => (
+          {Object.entries(cols).map(([group, items]) => (
             <div key={group}>
-              <h4 className="text-white font-semibold text-sm mb-4">{group}</h4>
+              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+                {group}
+              </p>
               <ul className="space-y-3">
                 {items.map((item) => (
                   <li key={item}>
-                    <a
-                      href="#"
-                      className="text-sm hover:text-white transition-colors"
-                    >
+                    <a href="#" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
                       {item}
                     </a>
                   </li>
@@ -64,13 +42,13 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-zinc-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-zinc-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-zinc-600">
             © {new Date().getFullYear()} LeadOrbit. All rights reserved.
           </p>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs text-zinc-500">All systems operational</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs text-zinc-600">All systems operational</span>
           </div>
         </div>
       </div>
