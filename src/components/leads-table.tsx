@@ -214,8 +214,8 @@ export function LeadsTable({ leads, members }: LeadsTableProps) {
       )}
 
       {/* Table */}
-      <div className="flex-1 overflow-x-auto">
-        <table className="w-full border-collapse">
+      <div className="flex-1 overflow-x-auto bg-white">
+        <table className="w-full border-collapse min-w-full">
           <thead>
             <tr className="bg-white border-b border-[#e3e8ee]">
               <th className="px-8 py-3 text-left">

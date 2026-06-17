@@ -59,7 +59,7 @@ export function AnalyticsContent({ analytics }: AnalyticsContentProps) {
     <div className="flex-1 overflow-auto bg-[#f6f9fc] p-8">
       <div className="max-w-7xl space-y-6">
         {/* Key metrics */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total leads */}
           <div className="bg-white rounded-lg border border-[#e3e8ee] p-6">
             <p className="text-[12px] font-semibold text-[#8898aa] uppercase tracking-wide">
@@ -102,7 +102,7 @@ export function AnalyticsContent({ analytics }: AnalyticsContentProps) {
         </div>
 
         {/* Leads by status (pie chart alternative - bar display) */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg border border-[#e3e8ee] p-6">
             <h2 className="text-lg font-semibold text-[#0a2540] mb-4">Leads by Status</h2>
             <div className="space-y-3">
@@ -158,7 +158,7 @@ export function AnalyticsContent({ analytics }: AnalyticsContentProps) {
         </div>
 
         {/* Top performers and recent activity */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top performers */}
           <div className="bg-white rounded-lg border border-[#e3e8ee] p-6">
             <h2 className="text-lg font-semibold text-[#0a2540] mb-4">Top Performers</h2>
