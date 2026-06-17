@@ -1,0 +1,242 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum WorkspaceRole {
+  owner
+  admin
+  manager
+  agent
+}
+
+enum LeadStatus {
+  new
+  contacted
+  follow_up
+  won
+  lost
+}
+
+enum LeadSource {
+  meta_ads
+  manual
+  import
+}
+
+enum ActivityType {
+  lead_created
+  status_changed
+  assigned
+  note_added
+  follow_up_set
+  whatsapp_sent
+  email_sent
+  called
+  deal_won
+  deal_lost
+}
+
+enum NotificationChannel {
+  whatsapp
+  email
+  in_app
+}
+
+enum NotificationStatus {
+  pending
+  sent
+  failed
+  read
+}
+
+// ============================================================
+// MODELS
+// ============================================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // hashed with bcrypt
+  fullName  String?
+
+  profile        Profile?
+  workspaces     WorkspaceMember[]
+  activities     Activity[]
+  assignedLeads  Lead[]            @relation("AssignedTo")
+  notifications  Notification[]
+  reminders      Reminder[]        @relation("AssignedTo")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id        String  @id
+  fullName  String?
+  avatarUrl String?
+  phone     String?
+
+  user User @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Workspace {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+  logoUrl String?
+
+  members    WorkspaceMember[]
+  metaPages  MetaPage[]
+  leads      Lead[]
+  activities Activity[]
+  notifications Notification[]
+  reminders  Reminder[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkspaceMember {
+  id           String         @id @default(cuid())
+  workspaceId  String
+  userId       String
+  role         WorkspaceRole  @default(agent)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  invitedAt DateTime @default(now())
+  joinedAt  DateTime?
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+}
+
+model MetaPage {
+  id           String  @id @default(cuid())
+  workspaceId  String
+  pageId       String
+  pageName     String
+  accessToken  String?
+  isActive     Boolean @default(true)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  leads     Lead[]
+
+  connectedAt DateTime @default(now())
+
+  @@unique([workspaceId, pageId])
+  @@index([workspaceId])
+}
+
+model Lead {
+  id             String      @id @default(cuid())
+  workspaceId    String
+  metaPageId     String?
+
+  fullName       String
+  email          String?
+  phone          String?
+  metaLeadId     String?              // For deduplication
+  adName         String?
+  formName       String?
+  rawMetaData    Json?                // Store raw Meta payload
+
+  status         LeadStatus  @default(new)
+  source         LeadSource  @default(meta_ads)
+  assignedToId   String?
+  notes          String?
+  nextFollowUp   DateTime?
+
+  workspace      Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  metaPage       MetaPage?   @relation(fields: [metaPageId], references: [id], onDelete: SetNull)
+  assignedTo     User?       @relation("AssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  activities     Activity[]
+  reminders      Reminder[]
+  notifications  Notification[]
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([workspaceId, metaLeadId])
+  @@index([workspaceId])
+  @@index([status])
+  @@index([assignedToId])
+  @@index([createdAt])
+}
+
+model Activity {
+  id            String        @id @default(cuid())
+  leadId        String
+  workspaceId   String
+  userId        String?
+  type          ActivityType
+  body          String?
+  metadata      Json?         // For context (old/new status, etc.)
+
+  lead      Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime  @default(now())
+
+  @@index([leadId])
+  @@index([workspaceId])
+}
+
+model Notification {
+  id            String                @id @default(cuid())
+  workspaceId   String
+  userId        String
+  leadId        String?
+  channel       NotificationChannel
+  title         String
+  body          String?
+  status        NotificationStatus    @default(pending)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lead      Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  sentAt    DateTime?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([workspaceId])
+}
+
+model Reminder {
+  id           String   @id @default(cuid())
+  leadId       String
+  workspaceId  String
+  assignedToId String?
+  dueAt        DateTime
+  note         String?
+  isDone       Boolean  @default(false)
+
+  lead       Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignedTo User?     @relation("AssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  createdAt  DateTime  @default(now())
+
+  @@index([leadId])
+  @@index([dueAt])
+}

@@ -8,11 +8,10 @@ export default async function DashboardPage() {
 
   if (!currentUser) redirect('/login')
 
-  const { profile, workspace, role } = currentUser
+  const { user, profile, workspace, role } = currentUser
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: '#0a2540' }}>
-
       {/* Top nav */}
       <header className="border-b border-white/10 px-6 h-14 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -43,10 +42,10 @@ export default async function DashboardPage() {
               className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
               style={{ background: 'linear-gradient(135deg,#635bff,#a78bfa)' }}
             >
-              {profile?.full_name?.charAt(0).toUpperCase() ?? '?'}
+              {profile?.fullName?.charAt(0).toUpperCase() ?? '?'}
             </div>
             <span className="text-[13px] text-white/70 hidden sm:block">
-              {profile?.full_name ?? 'User'}
+              {profile?.fullName ?? 'User'}
             </span>
           </div>
 
@@ -71,14 +70,14 @@ export default async function DashboardPage() {
             style={{ background: 'rgba(16,185,129,0.15)', color: '#34d399', border: '1px solid rgba(16,185,129,0.25)' }}
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            Phase 1 complete — Authentication working
+            Phase 1 complete — Prisma + PostgreSQL ready
           </div>
 
           <h1
             className="text-3xl font-bold text-white mb-3"
             style={{ letterSpacing: '-0.025em' }}
           >
-            Welcome, {profile?.full_name?.split(' ')[0] ?? 'there'} 👋
+            Welcome, {profile?.fullName?.split(' ')[0] ?? 'there'} 👋
           </h1>
           <p className="text-[15px] mb-8" style={{ color: '#8898aa' }}>
             Your workspace <span className="text-white font-medium">{workspace?.name}</span> is ready.
@@ -88,12 +87,12 @@ export default async function DashboardPage() {
           {/* Phase checklist */}
           <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-left space-y-3">
             {[
-              { done: true,  label: 'Database schema & RLS policies' },
-              { done: true,  label: 'Supabase auth (email + password)' },
-              { done: true,  label: 'Workspace created on signup' },
+              { done: true,  label: 'Prisma schema (8 tables, enums, relationships)' },
+              { done: true,  label: 'PostgreSQL connection ready for Railway' },
+              { done: true,  label: 'JWT auth (email/password + bcrypt)' },
               { done: true,  label: 'Protected routes via middleware' },
-              { done: true,  label: 'Server actions for sign in / sign out' },
-              { done: false, label: 'Phase 2 → Dashboard layout & navigation' },
+              { done: true,  label: 'Server actions for auth flow' },
+              { done: false, label: 'Phase 2 → Dashboard layout & sidebar navigation' },
               { done: false, label: 'Phase 3 → Leads table & filtering' },
               { done: false, label: 'Phase 4 → Lead details & CRM actions' },
             ].map(({ done, label }) => (
@@ -117,23 +116,18 @@ export default async function DashboardPage() {
             ))}
           </div>
 
-          {/* Stats preview */}
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            {[
-              { icon: Users,    label: 'Team members', value: '1' },
-              { icon: BarChart3, label: 'Leads',        value: '0' },
-              { icon: Bell,     label: 'Notifications', value: '0' },
-            ].map(({ icon: Icon, label, value }) => (
-              <div
-                key={label}
-                className="rounded-xl border border-white/10 p-4"
-                style={{ background: 'rgba(255,255,255,0.04)' }}
-              >
-                <Icon className="w-4 h-4 mb-2" style={{ color: '#635bff' }} />
-                <p className="text-[20px] font-bold text-white">{value}</p>
-                <p className="text-[11px] mt-0.5" style={{ color: '#425466' }}>{label}</p>
-              </div>
-            ))}
+          {/* Next steps */}
+          <div className="mt-8 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <p className="text-[12px] text-blue-300 mb-3">
+              <strong>Next: Deploy to Railway</strong>
+            </p>
+            <ol className="text-[11px] text-blue-300/80 space-y-1.5 text-left">
+              <li>1. Connect GitHub repo to Railway</li>
+              <li>2. Add PostgreSQL plugin</li>
+              <li>3. Set DATABASE_URL from plugin</li>
+              <li>4. Set JWT_SECRET env var</li>
+              <li>5. Run <code className="bg-white/5 px-1 rounded">npx prisma migrate deploy</code></li>
+            </ol>
           </div>
         </div>
       </div>

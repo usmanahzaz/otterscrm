@@ -31,7 +31,7 @@ export default function LoginPage() {
             Welcome back
           </h1>
           <p className="text-[14px]" style={{ color: '#8898aa' }}>
-            Sign in to your LeadOrbit workspace.
+            Sign in with your email and password.
           </p>
         </div>
 

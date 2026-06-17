@@ -2,69 +2,164 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
-import type { Profile, WorkspaceMember, Workspace, WorkspaceRole } from '@/types/database'
+import { cookies } from 'next/headers'
+import bcrypt from 'bcryptjs'
+import { db } from '@/lib/db'
+import { signJWT, verifyJWT, type JWTPayload } from '@/lib/jwt'
 
-// ── Sign Up ────────────────────────────────────────────────
-export async function signUp(formData: FormData) {
-  const supabase = await createClient()
+const COOKIE_NAME = 'auth-token'
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  maxAge: 30 * 24 * 60 * 60, // 30 days
+}
 
-  const fullName      = formData.get('full_name') as string
-  const email         = formData.get('email') as string
-  const password      = formData.get('password') as string
-  const workspaceName = formData.get('workspace_name') as string
+// ── Get current user from JWT cookie ───────────────────────
+export async function getCurrentUser() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get(COOKIE_NAME)?.value
 
-  // 1. Create auth user
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: fullName },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/confirm`,
+  if (!token) return null
+
+  const payload = await verifyJWT(token)
+  if (!payload) return null
+
+  const user = await db.user.findUnique({
+    where: { id: payload.userId },
+    include: {
+      profile: true,
+      workspaces: {
+        include: { workspace: true },
+        where: { workspaceId: payload.workspaceId },
+      },
     },
   })
 
-  if (authError)       return { error: authError.message }
-  if (!authData.user)  return { error: 'Failed to create account. Please try again.' }
+  if (!user) return null
 
-  // 2. Create workspace (service client bypasses RLS — user isn't a member yet)
-  const service    = await createServiceClient()
-  const base       = workspaceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-  const uniqueSlug = `${base}-${Math.random().toString(36).slice(2, 7)}`
+  const workspace = user.workspaces[0]?.workspace ?? null
+  const role = user.workspaces[0]?.role ?? null
 
-  const { data: wsData, error: wsError } = await service
-    .from('workspaces')
-    .insert({ name: workspaceName, slug: uniqueSlug })
-    .select()
-    .single()
+  return {
+    user,
+    profile: user.profile,
+    workspace,
+    role,
+  }
+}
 
-  if (wsError || !wsData) return { error: 'Failed to create workspace. Please try again.' }
+// ── Sign Up ────────────────────────────────────────────────
+export async function signUp(formData: FormData) {
+  const fullName       = formData.get('full_name') as string
+  const email          = formData.get('email') as string
+  const password       = formData.get('password') as string
+  const workspaceName  = formData.get('workspace_name') as string
 
-  const workspace = wsData as Workspace
+  if (!fullName || !email || !password || !workspaceName) {
+    return { error: 'All fields are required.' }
+  }
 
-  // 3. Add user as owner
-  const { error: memberError } = await service
-    .from('workspace_members')
-    .insert({
-      workspace_id: workspace.id,
-      user_id:      authData.user.id,
-      role:         'owner',
-      joined_at:    new Date().toISOString(),
+  // Check if user exists
+  const existing = await db.user.findUnique({ where: { email } })
+  if (existing) {
+    return { error: 'Email already in use.' }
+  }
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10)
+
+  // Create user, profile, workspace, and membership in one transaction
+  try {
+    const newUser = await db.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        fullName,
+        profile: {
+          create: {
+            fullName,
+          },
+        },
+        workspaces: {
+          create: {
+            role: 'owner',
+            joinedAt: new Date(),
+            workspace: {
+              create: {
+                name: workspaceName,
+                slug: `${workspaceName
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, '-')
+                  .replace(/^-|-$/g, '')}-${Math.random().toString(36).slice(2, 7)}`,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        workspaces: { include: { workspace: true } },
+      },
     })
 
-  if (memberError) return { error: 'Failed to set up workspace membership.' }
+    const workspace = newUser.workspaces[0]?.workspace
+    if (!workspace) throw new Error('Failed to create workspace')
 
-  return { success: true, message: 'Check your email to confirm your account.' }
+    // Create JWT and set cookie
+    const token = await signJWT({
+      userId: newUser.id,
+      email: newUser.email,
+      workspaceId: workspace.id,
+    })
+
+    const cookieStore = await cookies()
+    cookieStore.set(COOKIE_NAME, token, COOKIE_OPTIONS)
+
+    revalidatePath('/', 'layout')
+    redirect('/dashboard')
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to create account.'
+    return { error: message }
+  }
 }
 
 // ── Sign In ────────────────────────────────────────────────
 export async function signIn(formData: FormData) {
-  const supabase = await createClient()
   const email    = formData.get('email') as string
   const password = formData.get('password') as string
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) return { error: error.message }
+  if (!email || !password) {
+    return { error: 'Email and password are required.' }
+  }
+
+  const user = await db.user.findUnique({
+    where: { email },
+    include: { workspaces: { include: { workspace: true } } },
+  })
+
+  if (!user) {
+    return { error: 'Invalid email or password.' }
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password)
+  if (!isPasswordValid) {
+    return { error: 'Invalid email or password.' }
+  }
+
+  const workspace = user.workspaces[0]?.workspace
+  if (!workspace) {
+    return { error: 'No workspace found. Please sign up again.' }
+  }
+
+  // Create JWT and set cookie
+  const token = await signJWT({
+    userId: user.id,
+    email: user.email,
+    workspaceId: workspace.id,
+  })
+
+  const cookieStore = await cookies()
+  cookieStore.set(COOKIE_NAME, token, COOKIE_OPTIONS)
 
   revalidatePath('/', 'layout')
   redirect('/dashboard')
@@ -72,39 +167,8 @@ export async function signIn(formData: FormData) {
 
 // ── Sign Out ───────────────────────────────────────────────
 export async function signOut() {
-  const supabase = await createClient()
-  await supabase.auth.signOut()
+  const cookieStore = await cookies()
+  cookieStore.delete(COOKIE_NAME)
   revalidatePath('/', 'layout')
   redirect('/login')
-}
-
-// ── Get current user + workspace ───────────────────────────
-export async function getCurrentUser() {
-  const supabase = await createClient()
-
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return null
-
-  const { data: profileData } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
-  const profile = profileData as Profile | null
-
-  const { data: membershipsData } = await supabase
-    .from('workspace_members')
-    .select('*, workspace:workspaces(*)')
-    .eq('user_id', user.id)
-
-  const memberships = (membershipsData ?? []) as Array<WorkspaceMember & { workspace: Workspace }>
-
-  return {
-    user,
-    profile,
-    memberships,
-    workspace: (memberships[0]?.workspace ?? null) as Workspace | null,
-    role:      (memberships[0]?.role ?? null) as WorkspaceRole | null,
-  }
 }
