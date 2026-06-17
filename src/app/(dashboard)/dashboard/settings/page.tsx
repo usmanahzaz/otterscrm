@@ -4,6 +4,9 @@ import { ProfileForm } from './profile-form'
 import { WorkspaceForm } from './workspace-form'
 import { PasswordForm } from './password-form'
 import { NotificationPreferencesForm } from '@/components/notification-preferences-form'
+import { WorkspaceLogoUpload } from '@/components/workspace-logo-upload'
+import { ApiKeysSection } from '@/components/api-keys-section'
+import { BillingSection } from '@/components/billing-section'
 
 export default async function SettingsPage() {
   const currentUser = await getCurrentUser()
@@ -74,6 +77,43 @@ export default async function SettingsPage() {
             </div>
             <div className="px-6 py-5">
               <NotificationPreferencesForm />
+            </div>
+          </section>
+
+          {/* Workspace Logo section */}
+          {canEditWorkspace && (
+            <section className="bg-white rounded-xl border border-[#e3e8ee] overflow-hidden">
+              <div className="px-6 py-4 border-b border-[#e3e8ee]">
+                <h2 className="text-[15px] font-semibold text-[#0a2540]">Workspace Logo</h2>
+                <p className="text-[12px] text-[#8898aa] mt-0.5">Upload your workspace logo</p>
+              </div>
+              <div className="px-6 py-5">
+                <WorkspaceLogoUpload currentLogoUrl={workspace?.logoUrl || ''} />
+              </div>
+            </section>
+          )}
+
+          {/* API Keys section */}
+          {canEditWorkspace && (
+            <section className="bg-white rounded-xl border border-[#e3e8ee] overflow-hidden">
+              <div className="px-6 py-4 border-b border-[#e3e8ee]">
+                <h2 className="text-[15px] font-semibold text-[#0a2540]">API Keys</h2>
+                <p className="text-[12px] text-[#8898aa] mt-0.5">Manage API access for integrations</p>
+              </div>
+              <div className="px-6 py-5">
+                <ApiKeysSection />
+              </div>
+            </section>
+          )}
+
+          {/* Billing section */}
+          <section className="bg-white rounded-xl border border-[#e3e8ee] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#e3e8ee]">
+              <h2 className="text-[15px] font-semibold text-[#0a2540]">Billing & Plans</h2>
+              <p className="text-[12px] text-[#8898aa] mt-0.5">View and manage your subscription</p>
+            </div>
+            <div className="px-6 py-5">
+              <BillingSection currentPlan="free" />
             </div>
           </section>
 
